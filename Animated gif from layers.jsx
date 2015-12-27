@@ -71,7 +71,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		palette.$$gif.onClick = function() {
 			
 			// For more options, see: https://gist.github.com/mhulse/efd706ab3252b9cb6a25
-			_private.btm('update'); // Queries target application and returns a result.
+			_private.btm('input', undefined, 'output'); // Queries target application and returns a result.
 			
 		};
 		
@@ -93,13 +93,27 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		var talk;
 		
+		/**
+		 * Convert array to quoted strings delimited with comma.
+		 *
+		 * @param {array} $array Array to be "sanitized".
+		 * @return {string} String value of sanitized array.
+		 */
+		
+		function sanitize($array) {
+			
+			// If not an array, or if array is empty, then return an empty string. Otherwise, return quoted strings:
+			return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
+			
+		};
+		
 		// Some defaults:
 		$params1 = ($params1 instanceof Array) ? $params1 : [];
 		$params2 = ($params2 instanceof Array) ? $params2 : [];
 		
 		if ($name1 !== undefined) {
 			
-			$params1 = _private.sanitize($params1); // Arguments must be converted to strings.
+			$params1 = sanitize($params1); // Arguments must be converted to strings.
 			
 			// Make BridgeTalk message:
 			talk = new BridgeTalk();
@@ -121,20 +135,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			talk.send();
 			
 		}
-		
-	};
-	
-	/**
-	 * Convert array to quoted strings delimited with comma.
-	 *
-	 * @param {array} $array Array to be "sanitized".
-	 * @return {string} String value of sanitized array.
-	 */
-	
-	_private.sanitize = function($array) {
-		
-		// If not an array, or if array is empty, then return an empty string. Otherwise, return quoted strings:
-		return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
 		
 	};
 	
@@ -160,8 +160,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			}
 			
 		}
-		
-		_private.script();
 		
 	};
 	
@@ -222,24 +220,28 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.term = function(term_file_name, path) {
 		
 		var termfile = new File(path + "/" + term_file_name + ".term");
-		termfile.open("w");
-		termfile.writeln(
-			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-			"<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\"" +
-			"\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-			"<plist version=\"1.0\">\n" +
-			"<dict>\n" +
-			"<key>WindowSettings</key>\n" +
-			"<array>\n" +
-			" <dict>\n" +
-			"<key>CustomTitle</key>\n" +
-			"<string>My first termfile</string>\n" +
-			"<key>ExecutionString</key>\n" +
-			"<string>python\nprint(\"Hello World\")\nexit()</string>\n" +
-			"</dict>\n" +
-			"</array>\n" +
-			"</dict>\n" +
-			"</plist>\n");
+		
+		termfile.open('w');
+		termfile.writeln(' \
+			<?xml version="1.0" encoding="UTF-8"?> \
+			<!DOCTYPE plist PUBLIC \
+				"-//Apple Computer//DTD PLIST 1.0//EN" \
+				"http://www.apple.com/DTDs/PropertyList-1.0.dtd" \
+			> \
+			<plist version="1.0"> \
+				<dict> \
+					<key>WindowSettings</key> \
+					<array> \
+						<dict> \
+							<key>CustomTitle</key> \
+							<string>My first termfile</string> \
+							<key>ExecutionString</key> \
+							<string>convert -delay 35 -loop 0 ~/Desktop/foo/*.png animated.gif</string> \
+						</dict> \
+					</array> \
+				</dict> \
+			</plist> \
+		');
 		termfile.close();
 		
 		return termfile;
@@ -284,11 +286,17 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	 * @return {void}
 	 */
 	
-	_$this.update = function() {
+	_$this.input = function() {
 		
 		_private.create();
 		
 	};
+	
+	_$this.output = function() {
+		
+		_private.script();
+		
+	}
 	
 	//----------------------------------------------------------------------
 	// Return public API:
@@ -303,118 +311,3 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 //----------------------------------------------------------------------
 
 this[NS].init('Animated GIF From Layers');
-
-
-
-/*
-function blah() {
-	
-	
-	var script_file = File($.fileName); // get the full path of the script
-	var script_folder = script_file.path; // get the path from that
-	var new_termfile = createTermFile("execute_something", script_folder);
-	var result = new_termfile.execute(); // now execute the termfile
-	
-	$.writeln(result)
-}
-*/
-
-
-/**
- * creates a .term file
- * @param  {String} term_file_name --> the name for the .term file
- * @param  {Strin} path --> the path to the script file
- * @return {File}                the created termfile
- */
-/*
-function createTermFile(term_file_name, path) {
-	
-	var termfile = new File(path + "/" + term_file_name + ".term");
-	termfile.open("w");
-	termfile.writeln(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-		"<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\"" +
-		"\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-		"<plist version=\"1.0\">\n" +
-		"<dict>\n" +
-		"<key>WindowSettings</key>\n" +
-		"<array>\n" +
-		" <dict>\n" +
-		"<key>CustomTitle</key>\n" +
-		"<string>My first termfile</string>\n" +
-		"<key>ExecutionString</key>\n" +
-		"<string>python\nprint(\"Hello World\")\nexit()</string>\n" +
-		"</dict>\n" +
-		"</array>\n" +
-		"</dict>\n" +
-		"</plist>\n");
-	termfile.close();
-	return termfile;
-};
-*/
-
-/*
-function processDocument(currDoc){
-
-    doc = currDoc;
-    var len = doc.layers.length;
-    var fname = doc.name;
-    fname = fname.substr(0,fname.lastIndexOf("."));
-    fileName = "test" == "test" ? fname : "test";
-    while (len--){
-        
-           //if layer isn't locked
-        var thisLayer = doc.layers[len];
-        if(thisLayer.locked == false){
-            hideAllUnlocked();
-            thisLayer.visible=true;
-            app.redraw();
-
-
-            var suffix =  false ? thisLayer.name:len;
-            switch("PNG")
-            {
-                case "JPG":
-                    exportJPG(suffix);
-                    break;
-                case "GIF":
-                    exportGIF(suffix);
-                    break;
-                case"PNG":
-                    exportPNG(suffix);
-                    break;
-                default:
-                    break;
-                
-            }
-            
-            }
-       }
-}
-*/
-
-/*
-function exportPNG(num){
-     var exportOptions = new ExportOptionsPNG24();  
-    var exportName = ("~/Desktop/foo"+"/"+ fileName+"_"+num);
-    var dest = new File(exportName);
-    var type = ExportType.PNG24;
-     exportOptions.antiAliasing = true;
-     exportOptions.artBoardClipping=true;
-     exportOptions.transparency=true ;
-     exportOptions.horizontalScale = 100;
-     exportOptions.verticalScale = 100;
-    doc.exportFile(dest,type,exportOptions); 
-    }
-*/
-
-/*
-function hideAllUnlocked(){
-    var all = doc.layers.length;
-    while(all--){
-        if( doc.layers[all].locked==false){
-        doc.layers[all].visible=false;
-        }
-     }
-   }
-*/
