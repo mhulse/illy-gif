@@ -10,9 +10,15 @@ First, install [ImageMagick<sup>®</sup>](http://www.imagemagick.org/) (assuming
 $ brew install imagemagick
 ```
 
-Voilà!
+Use the below single-line bash command(s) to install this script into your Illustrator `Scripts` folder.
 
-More info coming soon …
+```bash
+INSTALL="/Applications/Adobe Illustrator CC 2015/Presets.localized/en_US/Scripts/@mhulse"; mkdir -pv "$INSTALL" && curl -#L https://github.com/mhulse/illy-gif/tarball/master | tar -xzv --strip-components 1 --include="*/*.jsx" --exclude=*/**/* -C "$INSTALL";
+```
+
+Run the script from the scripts menu in Illustrator.
+
+Voilà!
 
 ---
 
