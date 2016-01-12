@@ -7,7 +7,7 @@
 // jshint ignore:end
 
 /**
- * @@@BUILDINFO@@@ Boilerplate.jsx !Version! Fri Dec 25 2015 22:47:45 GMT-0800
+ * @@@BUILDINFO@@@ Animated GIF From Layers.jsx !Version! Fri Dec 25 2015 22:47:45 GMT-0800
  *
  * @see https://gist.github.com/mhulse/5f2fb7dbe48b65cd6861
  */
@@ -26,6 +26,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	var _doc = null;
 	var _ref = null;
 	var _title = '';
+	var _location; // Where does this script live?
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -38,6 +39,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	 */
 	
 	_private.main = function() {
+		
+		_location = _private.directory(File($.fileName).path, 'tmp');
 		
 		_ref = _private.palette();
 		_ref.center();
@@ -185,7 +188,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.make = function($count) {
 		
 		var options = new ExportOptionsPNG24();
-		var destination = new File('~/Desktop/foo' + '/test-' + $count);
+		var destination = new File(_location + '/' + $count);
 		var type = ExportType.PNG24;
 		
 		options.antiAliasing = true;
@@ -200,51 +203,57 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.script = function() {
 		
-		var script_file = File($.fileName); // get the full path of the script
-		var script_folder = script_file.path; // get the path from that
-		var new_termfile = _private.term("execute_something", script_folder);
-		var result = new_termfile.execute(); // now execute the termfile
-		
-		$.writeln(result);
+		var term = _private.term(_location, 'tmp');
+		var result = term.execute(); // now execute the termfile
 		
 	};
 	
 	
 	/**
-	 * creates a .term file
-	 * @param  {String} term_file_name --> the name for the .term file
-	 * @param  {Strin} path --> the path to the script file
-	 * @return {File}                the created termfile
+	 * Creates a `.term` file.
+	 *
+	 * @param {string} $name Name of the `.term` file.
+	 * @param {string} $path Path to this script.
+	 * @return {file} The newly created `.term` file.
 	 */
 	
-	_private.term = function(term_file_name, path) {
+	_private.term = function($path, $name) {
 		
-		var termfile = new File(path + "/" + term_file_name + ".term");
+		var term = new File($path + '/' + $name + '.term');
 		
-		termfile.open('w');
-		termfile.writeln(' \
-			<?xml version="1.0" encoding="UTF-8"?> \
-			<!DOCTYPE plist PUBLIC \
-				"-//Apple Computer//DTD PLIST 1.0//EN" \
-				"http://www.apple.com/DTDs/PropertyList-1.0.dtd" \
-			> \
-			<plist version="1.0"> \
-				<dict> \
-					<key>WindowSettings</key> \
-					<array> \
-						<dict> \
-							<key>CustomTitle</key> \
-							<string>My first termfile</string> \
-							<key>ExecutionString</key> \
-							<string>convert -delay 35 -loop 0 ~/Desktop/foo/*.png animated.gif</string> \
-						</dict> \
-					</array> \
-				</dict> \
-			</plist> \
-		');
-		termfile.close();
+		term.open('w');
+		term.writeln // Following indentation purely for the sake of the cleanliness of `.term` file's indentation:
+('<?xml version="1.0" encoding="UTF-8"?>\
+<!DOCTYPE plist PUBLIC\
+	"-//Apple Computer//DTD PLIST 1.0//EN"\
+	"http://www.apple.com/DTDs/PropertyList-1.0.dtd"\
+>\
+<plist version="1.0">\
+	<dict>\
+		<key>WindowSettings</key>\
+		<array>\
+			<dict>\
+				<key>CustomTitle</key>\
+				<string>My first termfile</string>\
+				<key>ExecutionString</key>\
+				<string>TMP=' + $path + '/' + $name + '.sh; chmod +x $TMP; $TMP;</string>\
+			</dict>\
+		</array>\
+	</dict>\
+</plist>');
+		term.close();
 		
-		return termfile;
+		return term;
+		
+	};
+	
+	_private.directory = function($location, $name) {
+		
+		var directory = new Folder($location + '/' + $name);
+		
+		directory.create()
+		
+		return directory;
 		
 	};
 	
