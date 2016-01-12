@@ -145,7 +145,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		while (count--) {
 			
-			layer = doc.layers[count];
+			layer = _doc.layers[count];
 			
 			if (layer.locked == false) {
 				
