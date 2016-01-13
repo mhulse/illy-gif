@@ -26,7 +26,9 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	var _doc = null;
 	var _ref = null;
 	var _title = '';
-	var _location; // Where does this script live?
+	var _directory = ''; // Where does this script live?
+	var _name = 'tmp';
+	var _term;
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -40,13 +42,26 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.main = function() {
 		
-		_location = _private.directory(File($.fileName).path, 'tmp');
+		_private.setup();
 		
 		_ref = _private.palette();
 		_ref.center();
 		_ref.show();
 		
 	};
+	
+	_private.setup = function() {
+		
+		// Determine location of "temp" folder:
+		_directory = new Folder(File($.fileName).path + '/' + _name);
+		
+		_private.directory(_directory);
+		
+		_term = _private.term(_directory, _name);
+		
+		_private.shell(_directory, _name);
+		
+	}
 	
 	/**
 	 * Create palette window.
@@ -63,11 +78,12 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			alignChildren: ["fill", "top"], \
 			margins: 15, \
 			$$gif: Button { text: "Create GIF" }, \
+			$$close: Button { text: "Close" }, \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
 		var palette = new Window(meta, _title, undefined, {
-			//option: value
+			//closeButton: false
 		});
 		
 		// Create GIF button:
@@ -75,6 +91,16 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 			// For more options, see: https://gist.github.com/mhulse/efd706ab3252b9cb6a25
 			_private.btm('input', undefined, 'output'); // Queries target application and returns a result.
+			
+		};
+		
+		// Palette UI close buttons:
+		palette.$$close.onClick = function() {
+			
+			// Remove "temp" folder:
+			_private.directory(_directory, true);
+			
+			palette.close();
 			
 		};
 		
@@ -188,7 +214,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.make = function($count) {
 		
 		var options = new ExportOptionsPNG24();
-		var destination = new File(_location + '/' + $count);
+		var destination = new File(_directory + '/' + $count);
 		var type = ExportType.PNG24;
 		
 		options.antiAliasing = true;
@@ -203,11 +229,37 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.script = function() {
 		
-		var term = _private.term(_location, 'tmp');
-		var result = term.execute(); // now execute the termfile
+		var result = _term.execute(); // now execute the termfile
 		
 	};
 	
+	_private.directory = function($directory, $remove) {
+		
+		if ( ! $directory.exists) {
+			
+			$directory.create();
+			
+		} else if ( !! $remove) {
+			
+			_private.clean($directory);
+			
+			$directory.remove();
+			
+		}
+		
+	};
+	
+	_private.clean = function($directory) {
+		
+		var file;
+		
+		for each (file in $directory.getFiles()) {
+			
+			file.remove();
+			
+		}
+		
+	};
 	
 	/**
 	 * Creates a `.term` file.
@@ -222,38 +274,42 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var term = new File($path + '/' + $name + '.term');
 		
 		term.open('w');
-		term.writeln // Following indentation purely for the sake of the cleanliness of `.term` file's indentation:
-('<?xml version="1.0" encoding="UTF-8"?>\
-<!DOCTYPE plist PUBLIC\
-	"-//Apple Computer//DTD PLIST 1.0//EN"\
-	"http://www.apple.com/DTDs/PropertyList-1.0.dtd"\
->\
-<plist version="1.0">\
-	<dict>\
-		<key>WindowSettings</key>\
-		<array>\
-			<dict>\
-				<key>CustomTitle</key>\
-				<string>My first termfile</string>\
-				<key>ExecutionString</key>\
-				<string>TMP=' + $path + '/' + $name + '.sh; chmod +x $TMP; $TMP;</string>\
-			</dict>\
-		</array>\
-	</dict>\
-</plist>');
+		term.writeln(' \
+			<?xml version="1.0" encoding="UTF-8"?> \
+			<!DOCTYPE plist PUBLIC \
+				"-//Apple Computer//DTD PLIST 1.0//EN" \
+				"http://www.apple.com/DTDs/PropertyList-1.0.dtd" \
+			> \
+			<plist version="1.0"> \
+				<dict> \
+					<key>WindowSettings</key> \
+					<array> \
+						<dict> \
+							<key>ExecutionString</key> \
+							<string>TMP=' + $path + '/' + $name + '.sh; chmod +x $TMP; $TMP;</string> \
+						</dict> \
+					</array> \
+				</dict> \
+			</plist> \
+		');
 		term.close();
 		
 		return term;
 		
 	};
 	
-	_private.directory = function($location, $name) {
+	_private.shell = function($path, $name) {
 		
-		var directory = new Folder($location + '/' + $name);
+		var shell = new File($path + '/' + $name + '.sh');
 		
-		directory.create()
+		shell.open('w');
+		shell.writeln('#!/bin/sh\
+cd ' + $path + '/;\
+convert -delay 35 -loop 0 *.png tmp.gif;\
+qlmanage -p tmp.gif >& /dev/null;');
+		shell.close();
 		
-		return directory;
+		return shell;
 		
 	};
 	
