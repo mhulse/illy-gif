@@ -169,6 +169,9 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var count = _doc.layers.length;
 		var layer;
 		
+		// Remove previously-generated images:
+		_private.clean(_directory, 'png');
+		
 		while (count--) {
 			
 			layer = _doc.layers[count];
@@ -181,7 +184,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				
 				_$application.redraw();
 				
-				_private.make(count);
+				// Generate images:
+				_private.make(_directory, count);
 				
 			}
 			
@@ -208,10 +212,10 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
-	_private.make = function($count) {
+	_private.make = function($directory, $name) {
 		
 		var options = new ExportOptionsPNG24();
-		var destination = new File(_directory + '/' + $count);
+		var destination = new File($directory + '/' + $name);
 		var type = ExportType.PNG24;
 		
 		options.antiAliasing = true;
@@ -226,7 +230,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.script = function() {
 		
-		var result = _term.execute(); // now execute the termfile
+		_term.execute(); // Now execute the term file.
 		
 	};
 	
@@ -246,13 +250,21 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
-	_private.clean = function($directory) {
+	_private.clean = function($directory, $ext) {
 		
 		var file;
+		var ext;
 		
 		for each (file in $directory.getFiles()) {
 			
-			file.remove();
+			ext = file.name.split('.')[1];
+			
+			// Delete if no extension provided or if extension matches:
+			if (( ! $ext) || ($ext && (ext == $ext))) {
+				
+				file.remove();
+				
+			}
 			
 		}
 		
@@ -364,12 +376,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		}
 		
 	};
-	
-	/**
-	 * Re-starts script (called from BridgeTalk).
-	 *
-	 * @return {void}
-	 */
 	
 	_$this.input = function() {
 		
