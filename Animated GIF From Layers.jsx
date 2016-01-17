@@ -176,7 +176,12 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 			layer = _doc.layers[count];
 			
-			if (layer.locked == false) {
+			// Skip template and locked layers:
+			if (
+				layer.printable // Template layers are not "printable".
+				&&
+				( ! layer.locked)
+			) {
 				
 				_private.hide();
 				
