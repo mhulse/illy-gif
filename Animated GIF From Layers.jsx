@@ -78,7 +78,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			alignChildren: ["fill", "top"], \
 			margins: 15, \
 			$$gif: Button { text: "Create GIF" }, \
-			$$close: Button { text: "Close" }, \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
@@ -95,12 +94,10 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		};
 		
 		// Palette UI close buttons:
-		palette.$$close.onClick = function() {
+		palette.onClose = function() {
 			
 			// Remove "temp" folder:
-			_private.directory(_directory, true);
-			
-			palette.close();
+			_private.directory(_directory, true); // Second argument is for removal.
 			
 		};
 		
@@ -301,12 +298,15 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.shell = function($path, $name) {
 		
 		var shell = new File($path + '/' + $name + '.sh');
+		var script = [
+			'#!/bin/sh\n', // Newline after shebang required for shell script to work.
+			'cd ' + $path + '/;',
+			'convert -delay 35 -loop 0 *.png ' + $name + '.gif;',
+			'qlmanage -p ' + $name + '.gif >& /dev/null;'
+		].join('\n');
 		
 		shell.open('w');
-		shell.writeln('#!/bin/sh\
-cd ' + $path + '/;\
-convert -delay 35 -loop 0 *.png tmp.gif;\
-qlmanage -p tmp.gif >& /dev/null;');
+		shell.writeln(script);
 		shell.close();
 		
 		return shell;
