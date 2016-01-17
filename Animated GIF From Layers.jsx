@@ -261,6 +261,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	/**
 	 * Creates a `.term` file.
 	 *
+	 * @see http://docstore.mik.ua/orelly/unix3/mac/ch01_03.htm
+	 *
 	 * @param {string} $name Name of the `.term` file.
 	 * @param {string} $path Path to this script.
 	 * @return {file} The newly created `.term` file.
@@ -268,48 +270,66 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.term = function($path, $name) {
 		
-		var term = new File($path + '/' + $name + '.term');
+		var script = [
+			'<?xml version="1.0" encoding="UTF-8"?>',
+			'<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+			'<plist version="1.0">',
+				'<dict>',
+					'<key>WindowSettings</key>',
+					'<array>',
+						'<dict>',
+							'<key>name</key>',
+							'<string>My first termfile</string>',
+							'<key>ExecutionString</key>',
+							'<string>TMP=' + $path + '/' + $name + '.sh; chmod u+x $TMP; source $TMP;</string>',
+						'</dict>',
+					'</array>',
+				'</dict>',
+			'</plist>'
+		].join('\n');
 		
-		term.open('w');
-		term.writeln(' \
-			<?xml version="1.0" encoding="UTF-8"?> \
-			<!DOCTYPE plist PUBLIC \
-				"-//Apple Computer//DTD PLIST 1.0//EN" \
-				"http://www.apple.com/DTDs/PropertyList-1.0.dtd" \
-			> \
-			<plist version="1.0"> \
-				<dict> \
-					<key>WindowSettings</key> \
-					<array> \
-						<dict> \
-							<key>ExecutionString</key> \
-							<string>TMP=' + $path + '/' + $name + '.sh; chmod +x $TMP; $TMP;</string> \
-						</dict> \
-					</array> \
-				</dict> \
-			</plist> \
-		');
-		term.close();
-		
-		return term;
+		return _private.file($path + '/' + $name + '.term', script);
 		
 	};
 	
 	_private.shell = function($path, $name) {
 		
-		var shell = new File($path + '/' + $name + '.sh');
 		var script = [
-			'#!/bin/sh\n', // Newline after shebang required for shell script to work.
+			'#!/usr/bin/env bash\n', // Newline after shebang required for shell script to work.
 			'cd ' + $path + '/;',
 			'convert -delay 35 -loop 0 *.png ' + $name + '.gif;',
-			'qlmanage -p ' + $name + '.gif >& /dev/null;'
+			'qlmanage -p ' + $name + '.gif >& /dev/null;',
+			'exit;'
 		].join('\n');
 		
-		shell.open('w');
-		shell.writeln(script);
-		shell.close();
+		return _private.file($path + '/' + $name + '.sh', script);
 		
-		return shell;
+	};
+	
+	/**
+	 * Create file encoded as UTF-8 with Unix line endings.
+	 *
+	 * @see https://github.com/fabiantheblind/extendscript/wiki/Create-And-Read-Files
+	 *
+	 * @param {string} $file Absolute path (including file name itself) to desired file's location.
+	 * @param {string} $string Contents to be written to file.
+	 * @return File object.
+	 */
+	
+	_private.file = function($file, $string) {
+		
+		var f = new File($file);
+		
+		f.encoding = 'UTF-8';
+		f.lineFeed = 'Unix'; // Convert to UNIX lineFeed
+		// term.lineFeed = 'Windows';
+		// term.lineFeed = 'Macintosh';
+		
+		f.open('w');
+		f.writeln($string);
+		f.close();
+		
+		return f;
 		
 	};
 	
