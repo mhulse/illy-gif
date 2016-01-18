@@ -12,6 +12,7 @@
  * @see https://gist.github.com/mhulse/5f2fb7dbe48b65cd6861
  */
 
+// Namespace:
 var NS = 'GIF';
 
 this[NS] = (function(_$this, _$application, _$window, undefined) {
@@ -170,7 +171,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var layer;
 		
 		// Remove previously-generated images:
-		_private.clean(_directory, 'png');
+		_private.remove(_directory, 'png');
 		
 		while (count--) {
 			
@@ -247,7 +248,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 		} else if ( !! $remove) {
 			
-			_private.clean($directory);
+			_private.remove($directory);
 			
 			$directory.remove();
 			
@@ -255,7 +256,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
-	_private.clean = function($directory, $ext) {
+	_private.remove = function($directory, $ext) {
 		
 		var file;
 		var ext;
@@ -311,10 +312,12 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.shell = function($path, $name) {
 		
+		var options = _private.trim(_private.options());
+		
 		var script = [
 			'#!/usr/bin/env bash\n', // Newline after shebang required for shell script to work.
 			'cd ' + $path + '/;',
-			'convert -delay 35 -loop 0 *.png ' + $name + '.gif;',
+			'convert ' + options + ' *.png ' + $name + '.gif;',
 			'qlmanage -p ' + $name + '.gif >& /dev/null;',
 			'exit;'
 		].join('\n');
@@ -347,6 +350,41 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		f.close();
 		
 		return f;
+		
+	};
+	
+	_private.options = function() {
+		
+		var text = _doc.layers['options'].textFrames[0];
+		var contents = '';
+		
+		if (typeof text != 'undefined') {
+			
+			// Get the text string and do some house cleaning:
+			contents = _private.clean(text.contents);
+			
+		}
+		
+		return contents;
+		
+	};
+	
+	/**
+	 * 1) Replaces all 3 types of line breaks with a space.
+	 * 2) Replace all double white spaces with single spaces.
+	 * 3) Removes whitespace from both ends of a string.
+	 *
+	 * @param {string} $string String to apply changes on.
+	 * @return {string} String with changes applied.
+	 */
+	
+	_private.clean = function($string) {
+		
+		return
+			$string
+				.replace(/(\r\n|\n|\r)/gm, ' ') // 1
+				.replace(/\s+/g, ' ') // 2
+				.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''); // 3
 		
 	};
 	
