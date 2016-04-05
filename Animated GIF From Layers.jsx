@@ -312,7 +312,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.shell = function($path, $name) {
 		
-		var options = _private.trim(_private.options());
+		var options = _private.options();
 		
 		var script = [
 			'#!/usr/bin/env bash\n', // Newline after shebang required for shell script to work.
