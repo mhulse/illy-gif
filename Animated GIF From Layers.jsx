@@ -75,10 +75,20 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Palette box setup:
 		var meta = 'palette { \
 			orientation: "column", \
-			preferredSize: [300, ""], \
 			alignChildren: ["fill", "top"], \
-			margins: 15, \
-			$$gif: Button { text: "Create GIF" }, \
+			margins: 5, \
+			spacing: 5, \
+			group1: Group { \
+				orientation: "row", \
+				alignChildren: ["fill", "top"], \
+				gif: Button { text: "Create GIF" } \
+			}, \
+			group2: Group { \
+				orientation: "row", \
+				alignChildren: ["fill", "top"], \
+				options: Button { text: "Generate Options" }, \
+				close: Button { text: "Close" } \
+			} \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
@@ -87,10 +97,23 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		});
 		
 		// Create GIF button:
-		palette.$$gif.onClick = function() {
+		palette.group1.gif.onClick = function() {
 			
 			// For more options, see: https://gist.github.com/mhulse/efd706ab3252b9cb6a25
-			_private.btm('input', undefined, 'output'); // Queries target application and returns a result.
+			_private.btm('create', undefined, 'script'); // Queries target application and returns a result.
+			
+		};
+		
+		palette.group2.options.onClick = function() {
+			
+			_private.btm('defaults');
+			
+		};
+		
+		// Close and/or palette UI close buttons:
+		palette.group2.close.onClick = function() {
+			
+			palette.close();
 			
 		};
 		
@@ -353,15 +376,69 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
+	_private.exists = function(name) {
+		
+		var i;
+		var il;
+		
+		for (i = 0, il = _doc.layers.length; i < il; i++) {
+			
+			if (_doc.layers[i].name == name) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+	};
+	
+	_private.populate = function() {
+		
+		var defaults = [
+			'-delay 35 -loop 0 -reverse -dispose Background -quiet -layers OptimizePlus',
+			'-delay 35 -loop 0 -dispose Background -quiet -layers OptimizePlus',
+			'-delay 35 -loop 0 -dispose Background -duplicate 1,-2-1 -quiet -layers OptimizePlus'
+		];
+		var frame;
+		var start = 0;
+		var offset = 35;
+		var size = 30;
+		var chars;
+		
+		for (option in defaults) {
+			
+			frame = _doc.textFrames.add();
+			frame.position = [_doc.width + offset, -start];
+			frame.contents = defaults[option];
+			
+			chars = frame.textRange.characterAttributes;
+			chars.size = size;
+			
+			start += offset;
+			
+			frame.move(_doc.layers.getByName('options'), ElementPlacement.INSIDE);
+			
+		}
+		
+	};
+	
 	_private.options = function() {
 		
-		var text = _doc.layers['options'].textFrames[0];
+		var name = 'options';
+		var text;
 		var contents = '';
 		
-		if (typeof text != 'undefined') {
+		if (_private.exists('options')) {
 			
-			// Get the text string and do some house cleaning:
-			contents = _private.clean(text.contents);
+			text = _doc.layers['options'].textFrames[0];
+		
+			if (typeof text != 'undefined') {
+				
+				// Get the text string and do some house cleaning:
+				contents = _private.clean(text.contents);
+				
+			}
 			
 		}
 		
@@ -385,6 +462,26 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				.replace(/(\r\n|\n|\r)/gm, ' ') // 1
 				.replace(/\s+/g, ' ') // 2
 				.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''); // 3
+		
+	};
+	
+	_private.defaults = function() {
+		
+		if ( ! _private.exists('options')) {
+			
+			layer = _doc.layers.add()
+			layer.name = 'options';
+			
+			_private.populate();
+			
+			layer.locked = true; // Now that we’re done, lock it!
+			layer.printable = false; // Template layer.
+			
+		} else {
+			
+			alert('Options layer already exists.');
+			
+		}
 		
 	};
 	
@@ -420,17 +517,23 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
-	_$this.input = function() {
+	_$this.defaults = function() {
+		
+		_private.defaults();
+		
+	};
+	
+	_$this.create = function() {
 		
 		_private.create();
 		
 	};
 	
-	_$this.output = function() {
+	_$this.script = function() {
 		
 		_private.script();
 		
-	}
+	};
 	
 	//----------------------------------------------------------------------
 	// Return public API:
