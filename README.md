@@ -10,15 +10,21 @@ First, install [ImageMagick<sup>®</sup>](http://www.imagemagick.org/) (assuming
 $ brew install imagemagick
 ```
 
-Use the below single-line bash command(s) to install this script into your Illustrator `Scripts` folder.
+Use the below single-line Unix bash command to quickly install this script into your Illustrator `Scripts` folder.
 
 ```bash
-INSTALL="/Applications/Adobe Illustrator CC 2015/Presets.localized/en_US/Scripts/@mhulse"; mkdir -pv "$INSTALL" && curl -#L https://github.com/mhulse/illy-gif/tarball/master | tar -xzv --strip-components 1 --include="*/*.jsx" --exclude=*/**/* -C "$INSTALL";
+bash <(curl -sL https://git.io/vwhQu)
 ```
+
+Alternatively, you can dowload [`Layer Animation II.jsx`](Layer Animation II.jsx) into your Illustrator `Scripts` folder, located in the `/lllustrator CC/Presets` folder in your `lllustrator CC` installation directory.
+
+The script’s filename, minus the file extension, will appear in the Scripts menu.
 
 Run the script from the scripts menu in Illustrator.
 
 Voilà!
+
+Use the below single-line bash command(s) to install this script into your Illustrator `Scripts` folder.
 
 ---
 
