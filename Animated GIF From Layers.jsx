@@ -376,7 +376,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			// Use options from the file or the first default option from above:
 			'convert ' + (options.length ? options : _defaults[0]) + ' *.png ' + $name + '.gif;',
 			'qlmanage -p ' + $name + '.gif >& /dev/null;',
-			'exit;'
+			'osascript -e \'tell application "Terminal" to close first window\' & exit;'
 		].join('\n');
 		
 		return _private.file($path + '/' + $name + '.sh', script);
