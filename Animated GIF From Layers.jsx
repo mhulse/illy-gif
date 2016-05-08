@@ -304,16 +304,12 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		for each (file in files) {
 			
-			if (files.hasOwnProperty(file)) {
+			ext = file.name.split('.')[1];
+			
+			// Delete if no extension provided or if extension matches:
+			if (( ! $ext) || ($ext && (ext == $ext))) {
 				
-				ext = file.name.split('.')[1];
-				
-				// Delete if no extension provided or if extension matches:
-				if (( ! $ext) || ($ext && (ext == $ext))) {
-					
-					file.remove();
-					
-				}
+				file.remove();
 				
 			}
 			
@@ -429,20 +425,16 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		for (option in defaults) {
 			
-			if (defaults.hasOwnProperty(option)) {
-				
-				frame = _doc.textFrames.add();
-				frame.position = [_doc.width + offset, -start];
-				frame.contents = defaults[option];
-				
-				chars = frame.textRange.characterAttributes;
-				chars.size = size;
-				
-				start += offset;
-				
-				frame.move(_doc.layers.getByName(_options), ElementPlacement.INSIDE);
-				
-			}
+			frame = _doc.textFrames.add();
+			frame.position = [_doc.width + offset, -start];
+			frame.contents = defaults[option];
+			
+			chars = frame.textRange.characterAttributes;
+			chars.size = size;
+			
+			start += offset;
+			
+			frame.move(_doc.layers.getByName(_options), ElementPlacement.INSIDE);
 			
 		}
 		
