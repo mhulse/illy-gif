@@ -60,15 +60,18 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.setup = function() {
 		
 		var directory;
+		var path;
 		
 		// Determine location of "temp" folder:
 		_directory = new Folder(File($.fileName).path + '/' + _name);
 		
 		_private.directory(_directory);
 		
-		_term = _private.term(_directory.path, _name);
+		path = decodeURIComponent(_directory.path);
 		
-		_private.shell(_directory.path, _name);
+		_term = _private.term(path, _name);
+		
+		_private.shell(path, _name);
 		
 	};
 	
