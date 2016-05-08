@@ -30,6 +30,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	var _directory = ''; // Where does this script live?
 	var _name = 'tmp';
 	var _term;
+	var _options = 'options';
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -431,7 +432,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 			start += offset;
 			
-			frame.move(_doc.layers.getByName('options'), ElementPlacement.INSIDE);
+			frame.move(_doc.layers.getByName(_options), ElementPlacement.INSIDE);
 			
 		}
 		
@@ -439,13 +440,12 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.options = function() {
 		
-		var name = 'options';
 		var text;
 		var contents = '';
 		
-		if (_private.exists('options')) {
+		if (_private.exists(_options)) {
 			
-			text = _doc.layers['options'].textFrames[0];
+			text = _doc.layers[_options].textFrames[0];
 		
 			if (typeof text != 'undefined') {
 				
@@ -481,10 +481,10 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.defaults = function() {
 		
-		if ( ! _private.exists('options')) {
+		if ( ! _private.exists(_options)) {
 			
 			layer = _doc.layers.add()
-			layer.name = 'options';
+			layer.name = _options;
 			
 			_private.populate();
 			
@@ -493,7 +493,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 		} else {
 			
-			alert('Options layer already exists.');
+			alert('The `' + _options + '` layer already exists.');
 			
 		}
 		
