@@ -1,6 +1,6 @@
-# Illy Gif!
+# Illy GIF!
 
-**Preview Illustrator layers as animated gif.**
+**Quickly preview Illustrator layers as animated GIF.**
 
 ## Installation
 
