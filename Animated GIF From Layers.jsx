@@ -73,17 +73,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	};
 	
 	/**
-	 * Prepares path for use in shell/term scripts.
-	 */
-	
-	_private.prep = function(path) {
-		
-		// https://github.com/mhulse/illy-gif/issues/29
-		return decodeURIComponent(path).replace(/(["\s'$`\\])/g, '\\$1');
-		
-	};
-	
-	/**
 	 * Create palette window.
 	 *
 	 * @return {window} Illustrator Window object.
@@ -367,7 +356,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 					'<array>',
 						'<dict>',
 							'<key>ExecutionString</key>',
-							'<string>TMP="' + _private.prep($path) + '/' + $name + '.sh"; chmod u+x $TMP; source $TMP;</string>',
+							'<string>TMP="' + $path + '/' + $name + '.sh"; chmod u+x "$TMP"; source "$TMP";</string>',
 						'</dict>',
 					'</array>',
 				'</dict>',
@@ -385,7 +374,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var script = [
 			// Is the newline after shebang required for shell script to work?
 			'#!/usr/bin/env bash\n',
-			'cd "' + _private.prep($path) + '/";',
+			'cd "' + $path + '/";',
 			// Use options from the file or the first default option from above:
 			'convert ' + (options.length ? options : _defaults[0]) + ' *.png ' + $name + '.gif;',
 			'qlmanage -p ' + $name + '.gif >& /dev/null;',
