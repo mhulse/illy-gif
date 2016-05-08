@@ -66,9 +66,9 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		_private.directory(_directory);
 		
-		_term = _private.term(_directory, _name);
+		_term = _private.term(_directory.path, _name);
 		
-		_private.shell(_directory, _name);
+		_private.shell(_directory.path, _name);
 		
 	};
 	
@@ -78,14 +78,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.prep = function(path) {
 		
-		var result;
-		
-		// Decode spaces:
-		result = decodeURIComponent(path); // https://github.com/mhulse/illy-gif/issues/29
-		// Escape spaces:
-		result = path.replace(/(["\s'$`\\])/g, '\\$1');
-		
-		return result;
+		// https://github.com/mhulse/illy-gif/issues/29
+		return path.replace(/(["\s'$`\\])/g, '\\$1');
 		
 	};
 	
