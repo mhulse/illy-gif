@@ -75,19 +75,34 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Palette box setup:
 		var meta = 'palette { \
 			orientation: "column", \
-			alignChildren: ["fill", "top"], \
+			alignChildren: [ \
+				"fill", \
+				"top" \
+			], \
 			margins: 5, \
 			spacing: 5, \
 			group1: Group { \
 				orientation: "row", \
-				alignChildren: ["fill", "top"], \
-				gif: Button { text: "Create GIF" } \
+				alignChildren: [ \
+					"fill", \
+					"top" \
+				], \
+				gif: Button { \
+					text: "Create GIF" \
+				} \
 			}, \
 			group2: Group { \
 				orientation: "row", \
-				alignChildren: ["fill", "top"], \
-				options: Button { text: "Generate Options" }, \
-				close: Button { text: "Close" } \
+				alignChildren: [ \
+					"fill", \
+					"top" \
+				], \
+				defaults: Button { \
+					text: "Generate Options" \
+				}, \
+				close: Button { \
+					text: "Close" \
+				} \
 			} \
 		}';
 		
@@ -104,8 +119,9 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			
 		};
 		
-		palette.group2.options.onClick = function() {
+		palette.group2.defaults.onClick = function() {
 			
+			// Generate default options:
 			_private.btm('defaults');
 			
 		};
