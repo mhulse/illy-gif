@@ -24,8 +24,6 @@ Run the script from the scripts menu in Illustrator.
 
 Voilà!
 
-Use the below single-line bash command(s) to install this script into your Illustrator `Scripts` folder.
-
 ---
 
 Copyright © 2015-2016 [Michael Hulse](http://mky.io).
