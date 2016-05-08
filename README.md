@@ -32,7 +32,11 @@ Palette window:
 
 Click the “Create GIF” button; the code will create PNGs from your unlocked/printable layers and then use [ImageMagick<sup>®</sup>](http://www.imagemagick.org/) to generate an animated GIF which will open in a [Quick Look](https://en.wikipedia.org/wiki/Quick_Look) preview window.
 
-Optionally, this script will utilize command line options for ImageMagick<sup>®</sup> via an “options” layer. Click the “Generate Options” button to create this layer (and some default options) automatically (feel free to customize from there). Note that the top-most child layer will be the option set that gets used by ImageMagick<sup>®</sup>; this means you can have multiple different configurations … Just move the configuration you want to the top! 
+Optionally, this script will utilize command line options for ImageMagick<sup>®</sup> via an “options” layer. Click the “Generate Options” button to create this layer (and some default options) automatically (feel free to customize from there).
+
+Note that the top-most child layer will be the option set that gets used by ImageMagick<sup>®</sup>; this means you can have multiple different configurations … Just move the configuration you want to the top!
+
+The only caveat, due to caching, is that you have to close and re-open the palette if you change configurations. 
 
 **More documentation coming soon.**
 

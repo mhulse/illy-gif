@@ -31,6 +31,11 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	var _name = 'tmp';
 	var _term;
 	var _options = 'options';
+	var _defaults = [
+		'-delay 35 -loop 0 -reverse -dispose Background -quiet -layers OptimizePlus', // Also default if no `options` layer.
+		'-delay 35 -loop 0 -dispose Background -quiet -layers OptimizePlus',
+		'-delay 35 -loop 0 -dispose Background -duplicate 1,-2-1 -quiet -layers OptimizePlus'
+	];
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -264,11 +269,22 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var destination = new File($directory + '/' + $name);
 		var type = ExportType.PNG24;
 		
-		options.antiAliasing = true;
+		/*
+		antiAliasing     boolean         If true, the exported image be anti-aliased. Default: true
+		artBoardClipping boolean         If true, the exported image be clipped to the art board. Default: false
+		horizontalScale  number (double) The horizontal scaling factor to apply to the exported image, where 100.0 is 100%. Default: 100.0
+		matte            boolean         If true, the art board be matted with a color. Default: true
+		matteColor       RGBColor        The color to use when matting the art board. Default: white
+		saveAsHTML       boolean         If true, the exported image be saved with an accompanying HTML file. Default: false
+		transparency     boolean         If true, the exported image use transparency. Default: true
+		typename         string          Read-only. The class name of the referenced object.
+		verticalScale    number (double) The vertical scaling factor to apply to the expo
+		*/
+		
+		options.antiAliasing = false; // Better for pixel art.
 		options.artBoardClipping = true;
+		options.matte = false;
 		options.transparency = true;
-		options.horizontalScale = 100;
-		options.verticalScale = 100;
 		
 		_doc.exportFile(destination, type, options);
 		
@@ -354,9 +370,11 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var options = _private.options();
 		
 		var script = [
-			'#!/usr/bin/env bash\n', // Newline after shebang required for shell script to work.
+			// Is the newline after shebang required for shell script to work?
+			'#!/usr/bin/env bash\n',
 			'cd ' + $path + '/;',
-			'convert ' + options + ' *.png ' + $name + '.gif;',
+			// Use options from the file or the first default option from above:
+			'convert ' + (options.length ? options : _defaults[0]) + ' *.png ' + $name + '.gif;',
 			'qlmanage -p ' + $name + '.gif >& /dev/null;',
 			'exit;'
 		].join('\n');
@@ -411,11 +429,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.populate = function() {
 		
-		var defaults = [
-			'-delay 35 -loop 0 -reverse -dispose Background -quiet -layers OptimizePlus',
-			'-delay 35 -loop 0 -dispose Background -quiet -layers OptimizePlus',
-			'-delay 35 -loop 0 -dispose Background -duplicate 1,-2-1 -quiet -layers OptimizePlus'
-		];
 		var frame;
 		var start = 0;
 		var offset = 35;
@@ -423,11 +436,11 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var chars;
 		var option;
 		
-		for (option in defaults) {
+		for (option in _defaults) {
 			
 			frame = _doc.textFrames.add();
 			frame.position = [_doc.width + offset, -start];
-			frame.contents = defaults[option];
+			frame.contents = _defaults[option];
 			
 			chars = frame.textRange.characterAttributes;
 			chars.size = size;
