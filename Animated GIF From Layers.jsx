@@ -59,6 +59,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.setup = function() {
 		
+		var directory;
+		
 		// Determine location of "temp" folder:
 		_directory = new Folder(File($.fileName).path + '/' + _name);
 		
@@ -354,7 +356,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 					'<array>',
 						'<dict>',
 							'<key>ExecutionString</key>',
-							'<string>TMP=' + $path + '/' + $name + '.sh; chmod u+x $TMP; source $TMP;</string>',
+							'<string>TMP="' + decodeURIComponent($path) + '/' + $name + '.sh"; chmod u+x $TMP; source $TMP;</string>',
 						'</dict>',
 					'</array>',
 				'</dict>',
@@ -372,7 +374,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var script = [
 			// Is the newline after shebang required for shell script to work?
 			'#!/usr/bin/env bash\n',
-			'cd ' + $path + '/;',
+			'cd "' + decodeURIComponent($path) + '/";',
 			// Use options from the file or the first default option from above:
 			'convert ' + (options.length ? options : _defaults[0]) + ' *.png ' + $name + '.gif;',
 			'qlmanage -p ' + $name + '.gif >& /dev/null;',
