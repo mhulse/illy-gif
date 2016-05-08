@@ -1,5 +1,5 @@
 /* jshint laxbreak:true, -W043, -W030 */
-/* globals app */
+/* globals app, Folder, $, BridgeTalk, ExportOptionsPNG24, ExportType, ElementPlacement */
 
 // jshint ignore:start
 #target illustrator
@@ -63,7 +63,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		_private.shell(_directory, _name);
 		
-	}
+	};
 	
 	/**
 	 * Create palette window.
@@ -172,7 +172,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			// If not an array, or if array is empty, then return an empty string. Otherwise, return quoted strings:
 			return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
 			
-		};
+		}
 		
 		// Some defaults:
 		$params1 = ($params1 instanceof Array) ? $params1 : [];
@@ -300,15 +300,20 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		var file;
 		var ext;
+		var files = $directory.getFiles();
 		
-		for each (file in $directory.getFiles()) {
+		for each (file in files) {
 			
-			ext = file.name.split('.')[1];
-			
-			// Delete if no extension provided or if extension matches:
-			if (( ! $ext) || ($ext && (ext == $ext))) {
+			if (files.hasOwnProperty(file)) {
 				
-				file.remove();
+				ext = file.name.split('.')[1];
+				
+				// Delete if no extension provided or if extension matches:
+				if (( ! $ext) || ($ext && (ext == $ext))) {
+					
+					file.remove();
+					
+				}
 				
 			}
 			
@@ -420,19 +425,24 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var offset = 35;
 		var size = 30;
 		var chars;
+		var option;
 		
 		for (option in defaults) {
 			
-			frame = _doc.textFrames.add();
-			frame.position = [_doc.width + offset, -start];
-			frame.contents = defaults[option];
-			
-			chars = frame.textRange.characterAttributes;
-			chars.size = size;
-			
-			start += offset;
-			
-			frame.move(_doc.layers.getByName(_options), ElementPlacement.INSIDE);
+			if (defaults.hasOwnProperty(option)) {
+				
+				frame = _doc.textFrames.add();
+				frame.position = [_doc.width + offset, -start];
+				frame.contents = defaults[option];
+				
+				chars = frame.textRange.characterAttributes;
+				chars.size = size;
+				
+				start += offset;
+				
+				frame.move(_doc.layers.getByName(_options), ElementPlacement.INSIDE);
+				
+			}
 			
 		}
 		
@@ -471,19 +481,20 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.clean = function($string) {
 		
-		return
-			$string
-				.replace(/(\r\n|\n|\r)/gm, ' ') // 1
-				.replace(/\s+/g, ' ') // 2
-				.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''); // 3
+		return $string
+			.replace(/(\r\n|\n|\r)/gm, ' ') // 1
+			.replace(/\s+/g, ' ') // 2
+			.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, ''); // 3
 		
 	};
 	
 	_private.defaults = function() {
 		
+		var layer;
+		
 		if ( ! _private.exists(_options)) {
 			
-			layer = _doc.layers.add()
+			layer = _doc.layers.add();
 			layer.name = _options;
 			
 			_private.populate();
