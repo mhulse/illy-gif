@@ -335,8 +335,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 					'<key>WindowSettings</key>',
 					'<array>',
 						'<dict>',
-							'<key>name</key>',
-							'<string>My first termfile</string>',
 							'<key>ExecutionString</key>',
 							'<string>TMP=' + $path + '/' + $name + '.sh; chmod u+x $TMP; source $TMP;</string>',
 						'</dict>',
