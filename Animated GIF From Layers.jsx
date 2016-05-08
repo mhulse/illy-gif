@@ -67,7 +67,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		_private.directory(_directory);
 		
-		path = decodeURIComponent(_directory.path);
+		// https://github.com/mhulse/illy-gif/issues/29
+		path = decodeURIComponent(_directory.toString()); // See: JavaScript Tools Guide CC.pdf
 		
 		_term = _private.term(path, _name);
 		
